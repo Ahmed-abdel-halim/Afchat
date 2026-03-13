@@ -31,16 +31,19 @@ class SetupController extends Controller
         $data = $request->validate([
             'text' => ['required','string','min:1','max:1000'],
             'media_type' => ['nullable','in:text,image,video'],
-            'media_url' => ['nullable','string','max:2048'],
-            'tags' => ['nullable','array'],
-            'tags.*' => ['string','min:1','max:50'],
+            'media_file' => ['nullable', 'file', 'max:20480'], // max 20MB
+            'tags' => ['nullable'],
         ]);
 
         $mediaType = $data['media_type'] ?? 'text';
+        $mediaUrl = null;
 
-        // قواعد للـ media في setup (اختياري)
-        if (in_array($mediaType, ['image','video'], true) && empty($data['media_url'])) {
-            return response()->json(['message' => 'media_url is required when media_type is image/video'], 422);
+        if (in_array($mediaType, ['image','video'], true)) {
+            if (!$request->hasFile('media_file')) {
+                return response()->json(['message' => 'media_file is required when media_type is image/video'], 422);
+            }
+            $path = $request->file('media_file')->store('media', 'public');
+            $mediaUrl = asset('storage/' . $path);
         }
 
         // slug unique
@@ -58,11 +61,14 @@ class SetupController extends Controller
             'text' => $data['text'],
             'slug' => $finalSlug,
             'media_type' => $mediaType,
-            'media_url' => $data['media_url'] ?? null,
+            'media_url' => $mediaUrl,
         ]);
 
         // tags: create/find + sync على setup_tags
-        $tagNames = collect($data['tags'] ?? [])
+        $tagsInput = $request->input('tags');
+        $tagsArray = is_string($tagsInput) ? explode(',', $tagsInput) : ($tagsInput ?? []);
+        
+        $tagNames = collect($tagsArray)
             ->map(fn($t) => trim($t))
             ->filter()
             ->unique()

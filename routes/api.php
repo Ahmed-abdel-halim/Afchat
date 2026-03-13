@@ -35,7 +35,7 @@ Route::get('/auth/profile', [AuthController::class, 'me'])->middleware('auth:san
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::post('/setups', [SetupController::class, 'store'])->middleware('auth:sanctum');
-Route::post('/setups/{id}/punchlines', [SetupController::class, 'storePunchline'])->middleware('auth:sanctum');
+Route::post('/setups/{id}/punchlines', [FeedController::class, 'storePunchline'])->middleware('auth:sanctum');
 Route::get('/setups/{slug}', [SetupController::class, 'showBySlug']);
 Route::get('/feed', [FeedController::class, 'feed']);
 Route::get('/setups/{id}/punchlines', [FeedController::class, 'punchlines']);
