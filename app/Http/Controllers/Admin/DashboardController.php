@@ -20,7 +20,41 @@ class DashboardController extends Controller
             'comments_count' => Comment::count(),
         ];
 
-        return view('admin.index', compact('stats'));
+        // جلب بيانات الإحصائيات لآخر 6 أشهر
+        $months = [];
+        $setups_history = [];
+        $punchlines_history = [];
+        $users_history = [];
+        $comments_history = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $monthDate = now()->subMonths($i);
+            $months[] = $monthDate->translatedFormat('M');
+            
+            $start = $monthDate->copy()->startOfMonth();
+            $end = $monthDate->copy()->endOfMonth();
+
+            $setups_history[] = Setup::whereBetween('created_at', [$start, $end])->count();
+            $punchlines_history[] = Punchline::whereBetween('created_at', [$start, $end])->count();
+            $users_history[] = User::whereBetween('created_at', [$start, $end])->count();
+            $comments_history[] = Comment::whereBetween('created_at', [$start, $end])->count();
+        }
+
+        $latest_setups = Setup::with(['user'])->withCount('punchlines')->latest()->take(5)->get();
+        $latest_users = User::latest()->take(5)->get();
+        $latest_punchlines = Punchline::with(['user'])->latest()->take(5)->get();
+
+        return view('admin.index', compact(
+            'stats', 
+            'latest_setups', 
+            'latest_users', 
+            'latest_punchlines',
+            'months',
+            'setups_history',
+            'punchlines_history',
+            'users_history',
+            'comments_history'
+        ));
     }
 
     public function setups()

@@ -4,21 +4,27 @@
     <!-- Immediate Theme Application - Must be at the top -->
     <script>
         (function() {
-            // Default to dark unless explicitly set to false in localStorage
-            const stored = localStorage.getItem('darkMode');
-            const isDark = stored !== null ? stored === 'true' : true; 
+            // Dark Mode
+            const storedDark = localStorage.getItem('darkMode');
+            const isDark = storedDark !== null ? storedDark === 'true' : true; 
+            if (isDark) document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+
+            // Sidebar State - Prevent Layout Shift
+            const storedSidebar = localStorage.getItem('sidebarOpen');
+            const isMobile = window.innerWidth < 1024;
+            const sidebarOpen = storedSidebar !== null ? storedSidebar === 'true' : !isMobile;
             
-            if (isDark) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
+            // Add a class to handle initial width without transition
+            if (!isMobile) {
+                document.documentElement.classList.add(sidebarOpen ? 'sidebar-opened' : 'sidebar-closed');
             }
         })();
     </script>
     <style>
         /* CSS to run before Tailwind loads */
         html.dark { background: #0d1117 !important; color: white; }
-        html { background: #f9fafb; transition: none !important; }
+        html { background: #f0f5fa; transition: none !important; }
         body { visibility: hidden; } /* Hide body until theme is ready */
         html.dark body, html body { visibility: visible; }
     </style>
@@ -30,6 +36,7 @@
     <!-- Scripts & Styles Load -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     
@@ -58,6 +65,9 @@
             .scale-up {
                 animation: scaleUp 0.3s ease-out forwards;
             }
+            .no-transition {
+                transition: none !important;
+            }
         }
 
         @keyframes scaleUp {
@@ -69,14 +79,27 @@
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { @apply bg-transparent; }
-        ::-webkit-scrollbar-thumb { @apply bg-gray-200 dark:bg-white/10 rounded-full hover:bg-gray-300 dark:hover:bg-white/20; }
+        ::-webkit-scrollbar-thumb { @apply bg-gray-300/50 dark:bg-white/10 rounded-full hover:bg-gray-400 dark:hover:bg-white/20; }
+
+        /* Sidebar transition - only active after load */
+        .sidebar-transition {
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        /* Essential widths before any JS loads */
+        @media (min-width: 1024px) {
+            html.sidebar-opened aside { width: 16rem !important; }
+            html.sidebar-closed aside { width: 6rem !important; }
+            html.sidebar-opened .main-content-wrapper { margin-right: 0; }
+        }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-darkBg text-gray-900 dark:text-gray-100 font-cairo transition-colors duration-300" 
+<body class="bg-[#f0f5fa] dark:bg-darkBg text-gray-900 dark:text-gray-100 font-cairo transition-colors duration-300" 
       x-data="{ 
         darkMode: document.documentElement.classList.contains('dark'), 
-        sidebarOpen: window.innerWidth >= 1024,
+        sidebarOpen: localStorage.getItem('sidebarOpen') !== null ? localStorage.getItem('sidebarOpen') === 'true' : window.innerWidth >= 1024,
         isMobile: window.innerWidth < 1024,
+        sidebarInitialized: false,
         toggleDarkMode() {
             this.darkMode = !this.darkMode;
             if (this.darkMode) {
@@ -87,16 +110,23 @@
                 localStorage.setItem('darkMode', 'false');
             }
         },
+        toggleSidebar() {
+            this.sidebarInitialized = true; // Enable transitions only on click
+            this.sidebarOpen = !this.sidebarOpen;
+            localStorage.setItem('sidebarOpen', this.sidebarOpen);
+            document.documentElement.classList.toggle('sidebar-opened', this.sidebarOpen);
+            document.documentElement.classList.toggle('sidebar-closed', !this.sidebarOpen);
+        },
         init() {
             window.addEventListener('resize', () => {
                 this.isMobile = window.innerWidth < 1024;
                 if (this.isMobile) this.sidebarOpen = false;
-                else this.sidebarOpen = true;
+                // Don't auto-open on desktop resize to respect user choice
             });
         }
       }">
 
-    <div class="flex h-screen overflow-hidden relative bg-gray-100 dark:bg-darkBg">
+    <div class="flex h-screen overflow-hidden relative bg-[#f0f5fa] dark:bg-darkBg">
         
         <!-- Sidebar Backdrop (Mobile only) -->
         <div x-show="sidebarOpen && isMobile" 
@@ -111,16 +141,17 @@
              x-cloak></div>
 
         <!-- Sidebar -->
-        <aside class="fixed inset-y-0 right-0 z-[70] h-full bg-white dark:bg-darkCard border-l border-gray-100 dark:border-white/5 shadow-2xl transition-all duration-300 ease-in-out lg:relative lg:z-20 lg:translate-x-0"
+        <aside class="fixed inset-y-0 right-0 z-[70] h-full bg-white dark:bg-darkCard border-l border-gray-100 dark:border-white/5 lg:relative lg:z-20 lg:translate-x-0 overflow-hidden"
                :class="{
-                   'w-72 translate-x-0': sidebarOpen,
-                   'w-0 translate-x-full lg:w-24 lg:translate-x-0': !sidebarOpen
+                   'w-64 translate-x-0': sidebarOpen,
+                   'w-0 translate-x-full lg:w-24 lg:translate-x-0': !sidebarOpen,
+                   'sidebar-transition': sidebarInitialized
                }"
                x-cloak>
             
             <div class="flex flex-col h-full overflow-hidden" :class="!sidebarOpen && !isMobile ? 'items-center' : ''">
                 <!-- Logo -->
-                <div class="px-6 py-8 flex items-center justify-between min-w-[280px]" :class="!sidebarOpen && !isMobile ? 'justify-center min-w-0' : ''">
+                <div class="px-6 py-8 flex items-center justify-between min-w-[240px]" :class="!sidebarOpen && !isMobile ? 'justify-center min-w-0' : ''">
                     <div class="flex items-center">
                         <div class="w-10 h-10 bg-amber-500 dark:bg-sky-500 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
                             <span class="text-white text-2xl font-black leading-none">أ</span>
@@ -184,12 +215,12 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        <main class="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
             
             <!-- Header -->
             <header class="h-20 flex items-center justify-between px-4 md:px-8 bg-white/80 dark:bg-darkCard/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5 z-40">
                 <div class="flex items-center">
-                    <button @click="sidebarOpen = !sidebarOpen" 
+                    <button @click="toggleSidebar()" 
                             class="p-3 mr-0 md:-mr-2 rounded-2xl bg-gray-50 dark:bg-white/5 hover:bg-amber-500/10 dark:hover:bg-sky-500/10 hover:text-amber-600 dark:hover:text-sky-400 transition-all">
                         <i class="fa-solid fa-bars-staggered text-xl" :class="sidebarOpen && !isMobile ? 'rotate-90' : ''"></i>
                     </button>
