@@ -36,12 +36,17 @@ Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth
 
 Route::post('/setups', [SetupController::class, 'store'])->middleware('auth:sanctum');
 Route::post('/setups/{id}/punchlines', [FeedController::class, 'storePunchline'])->middleware('auth:sanctum');
-Route::get('/setups/{slug}', [SetupController::class, 'showBySlug']);
-Route::get('/feed', [FeedController::class, 'feed']);
 Route::get('/setups/{id}/punchlines', [FeedController::class, 'punchlines']);
+Route::get('/setups/{slug}', [SetupController::class, 'showBySlug'])->where('slug', '.*');
+Route::get('/feed', [FeedController::class, 'feed']);
 // Route::post('/setups/{id}/punchlines', [FeedController::class, 'storePunchline'])->middleware('auth:sanctum');
 Route::post('/punchlines/{id}/view', [FeedController::class, 'view']);
 Route::post('/punchlines/{id}/laugh', [FeedController::class, 'laugh']);
 
 Route::get('/punchlines/{id}/comments', [CommentController::class, 'index']);
 Route::post('/punchlines/{id}/comments', [CommentController::class, 'store'])->middleware('auth:sanctum');
+
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\SitemapController;
+Route::get('/tags/{slug}', [TagController::class, 'showBySlug'])->where('slug', '.*');
+Route::get('/sitemap', [SitemapController::class, 'index']);

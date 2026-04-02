@@ -11,9 +11,31 @@ class SetupController extends Controller
 {
     public function showBySlug(string $slug)
     {
-        $setup = Setup::with(['user:id,name,email', 'tags:id,name','punchlines:id,setup_id,text,views,laughs'])
-            ->where('slug', $slug)
+        $decodedSlug = urldecode($slug);
+        
+        // 1. Try exact match (new long slugs)
+        $setup = Setup::with([
+            'user:id,name,avatar', 
+            'tags:id,name,slug',
+            'punchlines' => function($q) {
+                $q->with(['comments.user:id,name,avatar', 'user:id,name,avatar']);
+            }
+        ])
+        ->where('slug', $decodedSlug)
+        ->first();
+
+        // 2. Resilient fallback: Try matching old truncated slugs (first 5 words)
+        if (!$setup) {
+            $setup = Setup::with([
+                'user:id,name,avatar', 
+                'tags:id,name,slug',
+                'punchlines' => function($q) {
+                    $q->with(['comments.user:id,name,avatar', 'user:id,name,avatar']);
+                }
+            ])
+            ->whereRaw('? LIKE CONCAT(slug, "%")', [$decodedSlug])
             ->first();
+        }
 
         if (!$setup) {
             return response()->json([
@@ -46,20 +68,9 @@ class SetupController extends Controller
             $mediaUrl = asset('storage/' . $path);
         }
 
-        // slug unique
-        $baseSlug = Str::slug(Str::limit($data['text'], 60, ''));
-        $slug = $baseSlug ?: Str::random(8);
-
-        $i = 1;
-        $finalSlug = $slug;
-        while (Setup::where('slug', $finalSlug)->exists()) {
-            $finalSlug = $slug . '-' . $i++;
-        }
-
         $setup = Setup::create([
             'user_id' => $request->user()->id,
             'text' => $data['text'],
-            'slug' => $finalSlug,
             'media_type' => $mediaType,
             'media_url' => $mediaUrl,
         ]);
@@ -95,6 +106,7 @@ class SetupController extends Controller
                 'tags' => $setup->tags->map(fn($t) => [
                     'id' => $t->id,
                     'name' => $t->name,
+                    'slug' => $t->slug,
                 ])->values(),
             ]
         ], 201);

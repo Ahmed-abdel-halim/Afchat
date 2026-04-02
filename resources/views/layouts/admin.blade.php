@@ -13,21 +13,46 @@
             // Sidebar State - Prevent Layout Shift
             const storedSidebar = localStorage.getItem('sidebarOpen');
             const isMobile = window.innerWidth < 1024;
-            const sidebarOpen = storedSidebar !== null ? storedSidebar === 'true' : !isMobile;
+            let sidebarOpen = storedSidebar !== null ? storedSidebar === 'true' : !isMobile;
             
             // Add a class to handle initial width without transition
-            if (!isMobile) {
-                document.documentElement.classList.add(sidebarOpen ? 'sidebar-opened' : 'sidebar-closed');
-            }
+            document.documentElement.classList.add(sidebarOpen ? 'sidebar-opened' : 'sidebar-closed');
         })();
     </script>
     <style>
+        /* Immediate Sidebar Content Control - Prevent Jitter */
+        html.sidebar-closed aside span { display: none !important; }
+        html.sidebar-closed aside .min-w-\[240px\] { min-width: 0 !important; width: 6rem !important; }
+        html.sidebar-closed aside nav a { justify-content: center !important; }
+        
+        /* Immediate Sidebar Widths - Prevent Flickering on load */
+        @media (min-width: 1024px) {
+            html:not(.sidebar-ready).sidebar-opened aside { width: 16rem !important; }
+            html:not(.sidebar-ready).sidebar-closed aside { width: 6rem !important; }
+        }
+        @media (max-width: 1023px) {
+            html:not(.sidebar-ready).sidebar-closed aside { width: 0 !important; }
+            html:not(.sidebar-ready).sidebar-opened aside { width: 16rem !important; }
+        }
+
+        /* Essential widths before any JS loads */
+        @media (min-width: 1024px) {
+            html.sidebar-opened aside { width: 16rem; }
+            html.sidebar-closed aside { width: 6rem; }
+        }
+
         /* CSS to run before Tailwind loads */
         html.dark { background: #0d1117 !important; color: white; }
-        html { background: #f0f5fa; transition: none !important; }
-        body { visibility: hidden; } /* Hide body until theme is ready */
-        html.dark body, html body { visibility: visible; }
+        html { background: #f0f5fa; }
+        body { opacity: 0; transition: opacity 0.2s ease-in; } 
+        html.sidebar-ready body { opacity: 1; }
     </style>
+    <script>
+        // Mark as ready after a tiny delay to allow for smooth logic transitions
+        window.addEventListener('DOMContentLoaded', () => {
+             document.documentElement.classList.add('sidebar-ready');
+        });
+    </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -153,7 +178,7 @@
                 <!-- Logo -->
                 <div class="px-6 py-8 flex items-center justify-between min-w-[240px]" :class="!sidebarOpen && !isMobile ? 'justify-center min-w-0' : ''">
                     <div class="flex items-center">
-                        <div class="w-10 h-10 bg-amber-500 dark:bg-sky-500 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
+                        <div class="w-10 h-10 bg-sky-500 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
                             <span class="text-white text-2xl font-black leading-none">أ</span>
                         </div>
                         <span x-show="sidebarOpen || isMobile" x-transition.opacity class="mr-3 font-bold text-xl tracking-tight whitespace-nowrap">قـفـشات</span>
@@ -167,33 +192,33 @@
                 <!-- Nav -->
                 <nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto custom-scrollbar">
                     <a href="{{ route('admin.index') }}" 
-                       class="flex items-center px-4 py-3 rounded-2xl transition-all group whitespace-nowrap {{ request()->routeIs('admin.index') ? 'bg-amber-500/10 dark:bg-sky-500/10 text-amber-600 dark:text-sky-400' : 'hover:bg-gray-50 dark:hover:bg-white/5' }}">
+                       class="flex items-center px-4 py-3 rounded-2xl transition-all group whitespace-nowrap {{ request()->routeIs('admin.index') ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400' : 'hover:bg-gray-50 dark:hover:bg-white/5' }}">
                         <div class="w-8 flex justify-center shrink-0">
-                            <i class="fa-solid fa-chart-pie text-lg {{ request()->routeIs('admin.index') ? 'text-amber-500 dark:text-sky-500' : 'text-gray-400 group-hover:text-amber-500 dark:group-hover:text-sky-500' }}"></i>
+                            <i class="fa-solid fa-chart-pie text-lg {{ request()->routeIs('admin.index') ? 'text-sky-500' : 'text-gray-400 group-hover:text-sky-500' }}"></i>
                         </div>
                         <span x-show="sidebarOpen || isMobile" class="mr-3 font-semibold">نظرة عامة</span>
                     </a>
 
                     <a href="{{ route('admin.setups') }}" 
-                       class="flex items-center px-4 py-3 rounded-2xl transition-all group whitespace-nowrap {{ request()->routeIs('admin.setups') ? 'bg-amber-500/10 dark:bg-sky-500/10 text-amber-600 dark:text-sky-400' : 'hover:bg-gray-50 dark:hover:bg-white/5' }}">
+                       class="flex items-center px-4 py-3 rounded-2xl transition-all group whitespace-nowrap {{ request()->routeIs('admin.setups') ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400' : 'hover:bg-gray-50 dark:hover:bg-white/5' }}">
                         <div class="w-8 flex justify-center shrink-0">
-                            <i class="fa-solid fa-quote-right text-lg {{ request()->routeIs('admin.setups') ? 'text-amber-500 dark:text-sky-500' : 'text-gray-400 group-hover:text-amber-500 dark:group-hover:text-sky-500' }}"></i>
+                            <i class="fa-solid fa-quote-right text-lg {{ request()->routeIs('admin.setups') ? 'text-sky-500' : 'text-gray-400 group-hover:text-sky-500' }}"></i>
                         </div>
                         <span x-show="sidebarOpen || isMobile" class="mr-3 font-semibold">القفشات</span>
                     </a>
 
                     <a href="{{ route('admin.punchlines') }}" 
-                       class="flex items-center px-4 py-3 rounded-2xl transition-all group whitespace-nowrap {{ request()->routeIs('admin.punchlines') ? 'bg-amber-500/10 dark:bg-sky-500/10 text-amber-600 dark:text-sky-400' : 'hover:bg-gray-50 dark:hover:bg-white/5' }}">
+                       class="flex items-center px-4 py-3 rounded-2xl transition-all group whitespace-nowrap {{ request()->routeIs('admin.punchlines') ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400' : 'hover:bg-gray-50 dark:hover:bg-white/5' }}">
                         <div class="w-8 flex justify-center shrink-0">
-                            <i class="fa-solid fa-comments text-lg {{ request()->routeIs('admin.punchlines') ? 'text-amber-500 dark:text-sky-500' : 'text-gray-400 group-hover:text-amber-500 dark:group-hover:text-sky-500' }}"></i>
+                            <i class="fa-solid fa-comments text-lg {{ request()->routeIs('admin.punchlines') ? 'text-sky-500' : 'text-gray-400 group-hover:text-sky-500' }}"></i>
                         </div>
                         <span x-show="sidebarOpen || isMobile" class="mr-3 font-semibold">الردود</span>
                     </a>
 
                     <a href="{{ route('admin.users') }}" 
-                       class="flex items-center px-4 py-3 rounded-2xl transition-all group whitespace-nowrap {{ request()->routeIs('admin.users') ? 'bg-amber-500/10 dark:bg-sky-500/10 text-amber-600 dark:text-sky-400' : 'hover:bg-gray-50 dark:hover:bg-white/5' }}">
+                       class="flex items-center px-4 py-3 rounded-2xl transition-all group whitespace-nowrap {{ request()->routeIs('admin.users') ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400' : 'hover:bg-gray-50 dark:hover:bg-white/5' }}">
                         <div class="w-8 flex justify-center shrink-0">
-                            <i class="fa-solid fa-users text-lg {{ request()->routeIs('admin.users') ? 'text-amber-500 dark:text-sky-500' : 'text-gray-400 group-hover:text-amber-500 dark:group-hover:text-sky-500' }}"></i>
+                            <i class="fa-solid fa-users text-lg {{ request()->routeIs('admin.users') ? 'text-sky-500' : 'text-gray-400 group-hover:text-sky-500' }}"></i>
                         </div>
                         <span x-show="sidebarOpen || isMobile" class="mr-3 font-semibold">المستخدمين</span>
                     </a>
@@ -221,7 +246,7 @@
             <header class="h-20 flex items-center justify-between px-4 md:px-8 bg-white/80 dark:bg-darkCard/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5 z-40">
                 <div class="flex items-center">
                     <button @click="toggleSidebar()" 
-                            class="p-3 mr-0 md:-mr-2 rounded-2xl bg-gray-50 dark:bg-white/5 hover:bg-amber-500/10 dark:hover:bg-sky-500/10 hover:text-amber-600 dark:hover:text-sky-400 transition-all">
+                            class="p-3 mr-0 md:-mr-2 rounded-2xl bg-gray-50 dark:bg-white/5 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-400 transition-all">
                         <i class="fa-solid fa-bars-staggered text-xl" :class="sidebarOpen && !isMobile ? 'rotate-90' : ''"></i>
                     </button>
                     <h1 class="mr-4 md:mr-6 text-lg md:text-xl font-black truncate max-w-[150px] md:max-w-none">@yield('title', 'لوحة التحكم')</h1>
@@ -230,12 +255,12 @@
                 <div class="flex items-center space-x-3 space-x-reverse">
                     <!-- Dark Mode Toggle -->
                     <button @click="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-all">
-                        <i :class="darkMode ? 'fa-solid fa-sun text-amber-500' : 'fa-solid fa-moon text-indigo-500'"></i>
+                        <i :class="darkMode ? 'fa-solid fa-sun text-sky-500' : 'fa-solid fa-moon text-indigo-500'"></i>
                     </button>
 
                     <div class="relative group" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center space-x-3 space-x-reverse p-1 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-all">
-                            <div class="w-9 h-9 bg-gradient-to-tr from-amber-500 to-orange-400 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                            <div class="w-9 h-9 bg-gradient-to-tr from-sky-500 to-sky-400 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
                                 {{ substr(auth()->user()->name ?? 'Admin', 0, 1) }}
                             </div>
                             <span class="hidden md:block font-bold text-sm">{{ auth()->user()->name ?? 'المدير' }}</span>
@@ -262,34 +287,169 @@
             </header>
 
             <!-- Scrollable Page Content -->
-            <div class="flex-1 overflow-y-auto p-4 md:p-8">
-                @if(session('success'))
-                <div class="mb-6 bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 p-4 rounded-2xl flex items-center gap-3 font-bold scale-up">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <span>{{ session('success') }}</span>
-                </div>
-                @endif
-
-                @if($errors->any())
-                <div class="mb-6 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 p-4 rounded-2xl scale-up">
-                    <div class="flex items-center gap-3 font-bold mb-2">
-                        <i class="fa-solid fa-circle-exclamation"></i>
-                        <span>حدث خطأ ما:</span>
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 relative">
+                
+                <!-- Dynamic Toast Notifications -->
+                <div x-data="{ 
+                        showSuccess: {{ session('success') ? 'true' : 'false' }},
+                        showError: {{ $errors->any() ? 'true' : 'false' }},
+                        init() {
+                            if(this.showSuccess) setTimeout(() => this.showSuccess = false, 5000);
+                            if(this.showError) setTimeout(() => this.showError = false, 8000);
+                        }
+                    }"
+                    class="fixed top-24 left-6 z-[100] flex flex-col gap-3 max-w-md w-full sm:w-auto"
+                    x-cloak>
+                    
+                    <!-- Success Toast -->
+                    @if(session('success'))
+                    <div x-show="showSuccess" 
+                         x-transition:enter="transition ease-out duration-300 transform"
+                         x-transition:enter-start="-translate-x-full opacity-0"
+                         x-transition:enter-end="translate-x-0 opacity-100"
+                         x-transition:leave="transition ease-in duration-200 transform"
+                         x-transition:leave-start="translate-x-0 opacity-100"
+                         x-transition:leave-end="-translate-x-full opacity-0"
+                         class="bg-white dark:bg-darkCard border-l-4 border-green-500 shadow-2xl p-4 rounded-2xl flex items-center gap-4 group scale-up">
+                        <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
+                            <i class="fa-solid fa-circle-check text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">نجاح العملية</p>
+                            <p class="font-bold text-sm leading-tight text-gray-700 dark:text-gray-200">{{ session('success') }}</p>
+                        </div>
+                        <button @click="showSuccess = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors p-1">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
-                    <ul class="list-disc list-inside text-sm opacity-80">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                    @endif
+
+                    <!-- Error Toast -->
+                    @if($errors->any())
+                    <div x-show="showError" 
+                         x-transition:enter="transition ease-out duration-300 transform"
+                         x-transition:enter-start="-translate-x-full opacity-0"
+                         x-transition:enter-end="translate-x-0 opacity-100"
+                         x-transition:leave="transition ease-in duration-200 transform"
+                         x-transition:leave-start="translate-x-0 opacity-100"
+                         x-transition:leave-end="-translate-x-full opacity-0"
+                         class="bg-white dark:bg-darkCard border-l-4 border-red-500 shadow-2xl p-4 rounded-2xl flex items-center gap-4 scale-up">
+                        <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shrink-0">
+                            <i class="fa-solid fa-circle-exclamation text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">حدث خطأ</p>
+                            <ul class="list-none text-sm font-bold leading-tight text-gray-700 dark:text-gray-200">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <button @click="showError = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors p-1">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    @endif
                 </div>
-                @endif
 
                 @yield('content')
             </div>
         </main>
     </div>
 
+    <!-- Premium Global Confirmation Modal -->
+    <div x-data="{ 
+            open: false, 
+            title: '', 
+            message: '', 
+            confirmText: 'تأكيد',
+            cancelText: 'إلغاء',
+            callback: null,
+            confirmAction() {
+                if (this.callback) this.callback();
+                this.open = false;
+            }
+        }"
+        @confirm.window="
+            title = $event.detail.title || 'هل أنت متأكد؟';
+            message = $event.detail.message || 'لا يمكن التراجع عن هذا الإجراء.';
+            confirmText = $event.detail.confirmText || 'تأكيد';
+            cancelText = $event.detail.cancelText || 'إلغاء';
+            callback = $event.detail.callback;
+            open = true;
+        "
+        class="fixed inset-0 z-[200] overflow-y-auto"
+        x-show="open"
+        x-cloak>
+        
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
+             x-show="open" 
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"></div>
+
+        <!-- Modal Content -->
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-[2.5rem] bg-white dark:bg-darkCard p-8 text-right shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-100 dark:border-white/5"
+                 x-show="open"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                
+                <div class="flex flex-col items-center">
+                    <!-- Icon Container -->
+                    <div class="mx-auto flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-3xl bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-500 mb-6 scale-up">
+                        <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
+                    </div>
+                    
+                    <div class="text-center">
+                        <h3 class="text-2xl font-black leading-6 text-gray-900 dark:text-gray-100 mb-4" x-text="title"></h3>
+                        <p class="text-sm font-bold text-gray-500 dark:text-gray-400" x-text="message"></p>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex flex-col sm:flex-row-reverse gap-3">
+                    <button type="button" 
+                            @click="confirmAction()"
+                            class="inline-flex w-full justify-center rounded-2xl bg-red-600 px-6 py-4 text-sm font-black text-white shadow-lg shadow-red-600/30 hover:bg-red-700 transition-all sm:w-auto min-w-[120px]">
+                        <span x-text="confirmText"></span>
+                    </button>
+                    <button type="button" 
+                            @click="open = false"
+                            class="inline-flex w-full justify-center rounded-2xl bg-gray-100 dark:bg-white/5 px-6 py-4 text-sm font-black text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 transition-all sm:w-auto min-w-[120px]">
+                        <span x-text="cancelText"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @stack('modals')
     @stack('scripts')
+
+    <!-- Modal Helper Script -->
+    <script>
+        window.confirmDelete = function(formId, message = 'هل أنت متأكد من حذف هذا العنصر؟') {
+            window.dispatchEvent(new CustomEvent('confirm', {
+                detail: {
+                    title: 'تأكيد الحذف',
+                    message: message,
+                    confirmText: 'حذف الآن',
+                    cancelText: 'تراجع',
+                    callback: () => {
+                        document.getElementById(formId).submit();
+                    }
+                }
+            }));
+            return false;
+        };
+    </script>
 </body>
 </html>

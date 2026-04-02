@@ -62,7 +62,7 @@
                                     <button @click="openDetails({{ $user }})" class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-500/10 text-gray-500 hover:bg-gray-500 hover:text-white transition-all">
                                         <i class="fa-solid fa-eye text-xs"></i>
                                     </button>
-                                    <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا المستخدم؟')">
+                                    <form id="delete-form-{{ $user->id }}" action="{{ route('admin.users.delete', $user->id) }}" method="POST" onsubmit="return window.confirmDelete('delete-form-{{ $user->id }}', 'هل أنت متأكد من حذف هذا المستخدم؟ سيتم حذف جميع بياناته بشكل نهائي.')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500 hover:bg-red-50 hover:text-white transition-all">

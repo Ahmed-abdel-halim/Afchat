@@ -65,7 +65,7 @@ class DashboardController extends Controller
 
     public function punchlines()
     {
-        $punchlines = Punchline::with(['user', 'setup'])->latest()->paginate(12);
+        $punchlines = Punchline::with(['user', 'setup', 'comments.user'])->latest()->paginate(12);
         return view('admin.punchlines.index', compact('punchlines'));
     }
 
@@ -119,5 +119,11 @@ class DashboardController extends Controller
     {
         User::findOrFail($id)->delete();
         return back()->with('success', 'تم حذف المستخدم بنجاح');
+    }
+
+    public function deleteComment($id)
+    {
+        Comment::findOrFail($id)->delete();
+        return back()->with('success', 'تم حذف التعليق بنجاح');
     }
 }

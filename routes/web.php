@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\GeminiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,5 +40,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
         Route::get('/users', [DashboardController::class, 'users'])->name('users');
         Route::delete('/users/{id}', [DashboardController::class, 'deleteUser'])->name('users.delete');
+
+        Route::delete('/comments/{id}', [DashboardController::class, 'deleteComment'])->name('comments.delete');
+
+        Route::post('/gemini/generate', [GeminiController::class, 'generate'])->name('gemini.generate');
     });
 });

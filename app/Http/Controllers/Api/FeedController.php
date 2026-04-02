@@ -22,8 +22,8 @@ class FeedController extends Controller
             'user:id,name,avatar',
             'tags:id,name',
             'punchlines' => function ($q) {
-                // رتّب punchlines بالأقوى أولاً مع جلب اليوزر
-                $q->with('user:id,name,avatar')
+                // رتّب punchlines بالأقوى أولاً مع جلب اليوزر والتعليقات
+                $q->with(['user:id,name,avatar', 'comments.user:id,name,avatar'])
                   ->orderByRaw('CASE WHEN views=0 THEN 0 ELSE laughs/views END DESC')
                   ->orderByDesc('laughs')
                   ->orderByDesc('id');
@@ -45,6 +45,7 @@ class FeedController extends Controller
                 'tags' => $setup->tags->map(fn($t) => [
                     'id' => $t->id,
                     'name' => $t->name,
+                    'slug' => $t->slug,
                 ])->values(),
                 'punchlines' => $setup->punchlines->map(fn($p) => [
                     'id' => $p->id,
@@ -53,6 +54,7 @@ class FeedController extends Controller
                     'laughs' => $p->laughs,
                     'strength' => $p->strength,
                     'user' => $p->user,
+                    'comments' => $p->comments,
                 ])->values(),
             ],
             'next_cursor' => $setup->id,
@@ -86,6 +88,7 @@ class FeedController extends Controller
                     'tags' => $setup->tags->map(fn($t) => [
                         'id' => $t->id,
                         'name' => $t->name,
+                        'slug' => $t->slug,
                     ])->values(),
                 ],
                 'punchlines' => $p

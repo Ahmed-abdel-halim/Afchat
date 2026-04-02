@@ -4,6 +4,50 @@
 
 @section('content')
 <div class="space-y-8">
+    @if(session('success'))
+    <div class="bg-green-500/10 border border-green-500/20 text-green-500 p-4 rounded-2xl font-black text-sm flex items-center gap-3">
+        <i class="fa-solid fa-circle-check"></i>
+        {{ session('success') }}
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-2xl font-black text-sm flex items-center gap-3">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        {{ session('error') }}
+    </div>
+    @endif
+
+    <!-- AI Generation Magic -->
+    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 rounded-[2rem] shadow-xl relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+            <i class="fa-solid fa-wand-magic-sparkles text-8xl text-white"></i>
+        </div>
+        
+        <div class="relative z-10 max-w-2xl">
+            <h2 class="text-3xl font-black text-white mb-2 italic">سحر أفشات الـ AI 🔥</h2>
+            <p class="text-purple-100 text-sm font-bold mb-6">خلي "جيمناي" يملالك الموقع نكت وردود مسخرة في ثانية واحدة!</p>
+            
+            <form action="{{ route('admin.gemini.generate') }}" method="POST" class="flex flex-wrap items-center gap-4">
+                @csrf
+                <div class="relative">
+                    <select name="count" class="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white font-black text-sm outline-none focus:bg-white/20 transition-all appearance-none pr-10">
+                        <option value="5" class="text-gray-800">توليد 5 مواقف</option>
+                        <option value="10" class="text-gray-800">توليد 10 مواقف</option>
+                        <option value="20" class="text-gray-800">توليد 20 موقف</option>
+                    </select>
+                    <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50">
+                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="bg-white text-purple-600 hover:bg-purple-50 px-8 py-3 rounded-xl font-black text-sm shadow-lg shadow-black/10 transition-all active:scale-95 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt"></i>
+                    يلا بينا!
+                </button>
+            </form>
+        </div>
+    </div>
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Setups Stat -->
@@ -16,7 +60,7 @@
             </div>
             
             <div class="flex items-center justify-between">
-                <div class="w-12 h-12 bg-amber-50 dark:bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 shrink-0">
+                <div class="w-12 h-12 bg-sky-50 dark:bg-sky-500/10 rounded-2xl flex items-center justify-center text-sky-500 shrink-0">
                     <i class="fa-solid fa-quote-right text-lg"></i>
                 </div>
 
@@ -209,7 +253,7 @@
                     <h4 class="text-lg font-black">أحدث القفشات</h4>
                     <p class="text-gray-400 text-[10px] font-bold mt-1">آخر قفشات تم إضافتها</p>
                 </div>
-                <a href="{{ route('admin.setups') }}" class="text-[10px] font-black text-amber-500 hover:underline">عرض الكل</a>
+                <a href="{{ route('admin.setups') }}" class="text-[10px] font-black text-sky-500 hover:underline">عرض الكل</a>
             </div>
             
             <div class="flex-1 overflow-x-auto">
@@ -219,7 +263,7 @@
                         <tr class="group hover:bg-gray-50/50 dark:hover:bg-white/2 transition-colors">
                             <td class="px-8 py-5">
                                 <div class="flex items-center">
-                                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 font-bold shrink-0 text-xs">
+                                    <div class="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-600 font-bold shrink-0 text-xs">
                                         {{ mb_substr($setup->user->name ?? 'U', 0, 1) }}
                                     </div>
                                     <div class="mr-3 overflow-hidden">

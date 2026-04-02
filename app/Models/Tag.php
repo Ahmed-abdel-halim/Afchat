@@ -4,14 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Cviebrock\EloquentSluggable\Sluggable;
 
 class Tag extends Model
 {
-    use HasFactory;
-    protected $fillable = ['name'];
+    use HasFactory, Sluggable;
+
+    protected $fillable = ['name', 'slug'];
 
     public function setups()
     {
         return $this->belongsToMany(Setup::class, 'setup_tags')->withTimestamps();
+    }
+
+    /**
+     * Return the sluggable configuration array for this model.
+     *
+     * @return array
+     */
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'name',
+                'method' => function ($string, $separator) {
+                    return str_replace(' ', $separator, trim($string));
+                }
+            ]
+        ];
     }
 }

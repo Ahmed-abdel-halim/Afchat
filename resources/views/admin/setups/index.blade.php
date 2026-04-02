@@ -19,7 +19,7 @@
             <input type="text" placeholder="البحث في القفشات..." 
                    class="w-full bg-white dark:bg-darkCard border border-gray-100 dark:border-white/5 rounded-2xl pr-12 pl-4 py-3 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all">
         </div>
-        <button @click="showAddModal = true" class="px-6 py-3 bg-amber-500 dark:bg-sky-500 text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 dark:shadow-sky-500/20 hover:scale-[1.02] transition-all">
+        <button @click="showAddModal = true" class="px-6 py-3 bg-sky-500 text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-sky-500/20 hover:scale-[1.02] transition-all">
             <i class="fa-solid fa-plus"></i>
             <span>إضافة قفشة جديدة</span>
         </button>
@@ -61,7 +61,7 @@
                                             class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-all">
                                         <i class="fa-solid fa-pen-to-square text-xs"></i>
                                     </button>
-                                    <form action="{{ route('admin.setups.delete', $setup->id) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من الحذف؟')">
+                                    <form id="delete-setup-{{ $setup->id }}" action="{{ route('admin.setups.delete', $setup->id) }}" method="POST" onsubmit="return window.confirmDelete('delete-setup-{{ $setup->id }}', 'هل أنت متأكد من حذف هذه القفشة؟ سيتم حذف جميع الردود والتعليقات المرتبطة بها.')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all">
@@ -115,11 +115,11 @@
                         @csrf
                         <div>
                             <label class="block mb-2 text-xs font-black text-gray-400 uppercase tracking-widest">محتوى القفشة</label>
-                            <textarea name="text" required rows="4" class="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-amber-500/20 transition-all" placeholder="اكتب بداية القفشة هنا..."></textarea>
+                            <textarea name="text" required rows="4" class="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-sky-500/20 transition-all" placeholder="اكتب بداية القفشة هنا..."></textarea>
                         </div>
                         
                         <div class="pt-4 flex gap-3">
-                            <button type="submit" class="flex-1 py-4 bg-amber-500 dark:bg-sky-500 text-white rounded-2xl font-bold shadow-lg shadow-amber-500/20 dark:shadow-sky-500/20 hover:opacity-90 transition-all">حفظ</button>
+                            <button type="submit" class="flex-1 py-4 bg-sky-500 text-white rounded-2xl font-bold shadow-lg shadow-sky-500/20 hover:opacity-90 transition-all">حفظ</button>
                             <button type="button" @click="showAddModal = false" class="flex-1 py-4 bg-gray-50 dark:bg-white/5 rounded-2xl font-bold hover:bg-gray-100 dark:hover:bg-white/10 transition-all">إلغاء</button>
                         </div>
                     </form>
