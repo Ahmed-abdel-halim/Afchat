@@ -9,9 +9,7 @@ use Cviebrock\EloquentSluggable\Sluggable;
 class Setup extends Model
 {
     use HasFactory, Sluggable;
-        protected $fillable = ['text','slug','media_type','media_url','user_id'];
-
-
+    protected $fillable = ['text','slug','media_type','media_url','user_id'];
 
     public function user()
     {
@@ -28,11 +26,6 @@ class Setup extends Model
         return $this->belongsToMany(Tag::class, 'setup_tags')->withTimestamps();
     }
 
-    /**
-     * Return the sluggable configuration array for this model.
-     *
-     * @return array
-     */
     public function sluggable(): array
     {
         return [
@@ -41,10 +34,11 @@ class Setup extends Model
                 'method' => function ($string, $separator) {
                     $string = preg_replace('/[^\p{L}\p{N}\s-]/u', '', $string);
                     $words = explode(' ', trim($string));
-                    $base = implode(' ', array_slice($words, 0, 15)); // Extend to 15 words for better SEO and matching
+                    $base = implode(' ', array_slice($words, 0, 15)); 
                     return str_replace(' ', $separator, $base);
                 }
             ]
         ];
     }
 }
+

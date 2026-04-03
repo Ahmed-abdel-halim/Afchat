@@ -20,7 +20,6 @@ class DashboardController extends Controller
             'comments_count' => Comment::count(),
         ];
 
-        // جلب بيانات الإحصائيات لآخر 6 أشهر
         $months = [];
         $setups_history = [];
         $punchlines_history = [];
@@ -127,3 +126,4 @@ class DashboardController extends Controller
         return back()->with('success', 'تم حذف التعليق بنجاح');
     }
 }
+

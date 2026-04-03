@@ -22,7 +22,6 @@ class FeedController extends Controller
             'user:id,name,avatar',
             'tags:id,name',
             'punchlines' => function ($q) {
-                // رتّب punchlines بالأقوى أولاً مع جلب اليوزر والتعليقات
                 $q->with(['user:id,name,avatar', 'comments.user:id,name,avatar'])
                   ->orderByRaw('CASE WHEN views=0 THEN 0 ELSE laughs/views END DESC')
                   ->orderByDesc('laughs')
@@ -61,7 +60,6 @@ class FeedController extends Controller
         ]);
     }
 
-    // GET /api/setups/{id}/punchlines
     public function punchlines($id)
     {
         $setup = Setup::with('tags:id,name')->findOrFail($id);
@@ -97,7 +95,6 @@ class FeedController extends Controller
     }
     
 
-    // POST /api/punchlines/{id}/view
     public function view($id)
     {
         $p = Punchline::findOrFail($id);
@@ -105,7 +102,6 @@ class FeedController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    // POST /api/punchlines/{id}/laugh
     public function laugh($id)
     {
         $p = Punchline::findOrFail($id);
@@ -120,7 +116,7 @@ class FeedController extends Controller
         $data = $request->validate([
             'media_type' => ['required','in:text,image,video'],
             'text' => ['nullable','string'],
-            'media_file' => ['nullable', 'file', 'max:20480'], // max 20MB
+            'media_file' => ['nullable', 'file', 'max:20480'], 
         ]);
     
         if ($data['media_type'] === 'text' && empty($data['text'])) {
@@ -164,3 +160,4 @@ class FeedController extends Controller
     }
     
 }
+

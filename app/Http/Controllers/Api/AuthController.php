@@ -47,9 +47,6 @@ class AuthController extends Controller
             ]);
         }
 
-        // optional: امسح توكنات قديمة لو عايز
-        // $user->tokens()->delete();
-
         $token = $user->createToken('afshat')->plainTextToken;
 
         return response()->json([
@@ -74,3 +71,4 @@ class AuthController extends Controller
         ]);
     }
 }
+

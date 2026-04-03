@@ -9,6 +9,24 @@ use Illuminate\Support\Str;
 
 class SetupController extends Controller
 {
+    public function showById(int $id)
+    {
+        $setup = Setup::with([
+            'user:id,name,avatar', 
+            'tags:id,name,slug',
+            'punchlines' => function($q) {
+                $q->with(['comments.user:id,name,avatar', 'user:id,name,avatar']);
+            }
+        ])
+        ->find($id);
+
+        if (!$setup) {
+            return response()->json(['message' => 'Setup not found'], 404);
+        }
+
+        return response()->json(['data' => $setup]);
+    }
+
     public function showBySlug(string $slug)
     {
         $decodedSlug = urldecode($slug);
