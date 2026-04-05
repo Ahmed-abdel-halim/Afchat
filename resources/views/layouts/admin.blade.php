@@ -106,6 +106,14 @@
         ::-webkit-scrollbar-track { @apply bg-transparent; }
         ::-webkit-scrollbar-thumb { @apply bg-gray-300/50 dark:bg-white/10 rounded-full hover:bg-gray-400 dark:hover:bg-white/20; }
 
+        /* Global Pagination Styles */
+        nav[role="navigation"] span[aria-current="page"] > span {
+            @apply bg-sky-500 text-white border-sky-500 !important;
+        }
+        nav[role="navigation"] a:hover {
+            @apply bg-sky-500/10 text-sky-500 !important;
+        }
+
         /* Sidebar transition - only active after load */
         .sidebar-transition {
             transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -292,7 +300,7 @@
                 <!-- Dynamic Toast Notifications -->
                 <div x-data="{ 
                         showSuccess: {{ session('success') ? 'true' : 'false' }},
-                        showError: {{ $errors->any() ? 'true' : 'false' }},
+                        showError: {{ ($errors->any() || session('error')) ? 'true' : 'false' }},
                         init() {
                             if(this.showSuccess) setTimeout(() => this.showSuccess = false, 5000);
                             if(this.showError) setTimeout(() => this.showError = false, 8000);
@@ -310,22 +318,22 @@
                          x-transition:leave="transition ease-in duration-200 transform"
                          x-transition:leave-start="translate-x-0 opacity-100"
                          x-transition:leave-end="-translate-x-full opacity-0"
-                         class="bg-white dark:bg-darkCard border-l-4 border-green-500 shadow-2xl p-4 rounded-2xl flex items-center gap-4 group scale-up">
-                        <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
+                         class="bg-green-600 text-white shadow-2xl p-4 rounded-2xl flex items-center gap-4 group scale-up border border-white/20">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
                             <i class="fa-solid fa-circle-check text-xl"></i>
                         </div>
                         <div class="flex-1">
-                            <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">نجاح العملية</p>
-                            <p class="font-bold text-sm leading-tight text-gray-700 dark:text-gray-200">{{ session('success') }}</p>
+                            <p class="text-xs font-black text-white/70 uppercase tracking-widest mb-1">نجاح العملية</p>
+                            <p class="font-bold text-sm leading-tight text-white">{{ session('success') }}</p>
                         </div>
-                        <button @click="showSuccess = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors p-1">
+                        <button @click="showSuccess = false" class="text-white/50 hover:text-white transition-colors p-1">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
                     @endif
 
-                    <!-- Error Toast -->
-                    @if($errors->any())
+                    <!-- Error Toast (Themed Green as requested) -->
+                    @if($errors->any() || session('error'))
                     <div x-show="showError" 
                          x-transition:enter="transition ease-out duration-300 transform"
                          x-transition:enter-start="-translate-x-full opacity-0"
@@ -333,19 +341,26 @@
                          x-transition:leave="transition ease-in duration-200 transform"
                          x-transition:leave-start="translate-x-0 opacity-100"
                          x-transition:leave-end="-translate-x-full opacity-0"
-                         class="bg-white dark:bg-darkCard border-l-4 border-red-500 shadow-2xl p-4 rounded-2xl flex items-center gap-4 scale-up">
-                        <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shrink-0">
-                            <i class="fa-solid fa-circle-exclamation text-xl"></i>
+                         class="bg-green-600 text-white shadow-2xl p-4 rounded-2xl flex items-center gap-4 scale-up border border-white/20">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
+                            <i class="fa-solid fa-circle-check text-xl"></i>
                         </div>
                         <div class="flex-1">
-                            <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">حدث خطأ</p>
-                            <ul class="list-none text-sm font-bold leading-tight text-gray-700 dark:text-gray-200">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                            <p class="text-xs font-black text-white/70 uppercase tracking-widest mb-1">نجاح العملية</p>
+                            <div class="text-sm font-bold leading-tight text-white">
+                                @if(session('error'))
+                                    <p>{!! session('error') !!}</p>
+                                @endif
+                                @if($errors->any())
+                                    <ul class="list-none">
+                                        @foreach($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </div>
                         </div>
-                        <button @click="showError = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors p-1">
+                        <button @click="showError = false" class="text-white/50 hover:text-white transition-colors p-1">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>

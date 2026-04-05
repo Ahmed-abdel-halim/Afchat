@@ -4,52 +4,65 @@
 
 @section('content')
 <div class="space-y-8">
-    @if(session('success'))
-    <div class="bg-green-500/10 border border-green-500/20 text-green-500 p-4 rounded-2xl font-black text-sm flex items-center gap-3">
-        <i class="fa-solid fa-circle-check"></i>
-        {{ session('success') }}
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-2xl font-black text-sm flex items-center gap-3">
-        <i class="fa-solid fa-circle-exclamation"></i>
-        {{ session('error') }}
-    </div>
-    @endif
-
-    <!-- AI Generation Magic -->
-    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 rounded-[2rem] shadow-xl relative overflow-hidden group">
-        <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
-            <i class="fa-solid fa-wand-magic-sparkles text-8xl text-white"></i>
-        </div>
-        
-        <div class="relative z-10 max-w-2xl">
-            <h2 class="text-3xl font-black text-white mb-2 italic">سحر أفشات الـ AI 🔥</h2>
-            <p class="text-purple-100 text-sm font-bold mb-6">خلي "جيمناي" يملالك الموقع نكت وردود مسخرة في ثانية واحدة!</p>
+    <!-- AI Generation Magic & Manual Import -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Auto Generation -->
+        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 rounded-[2rem] shadow-xl relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                <i class="fa-solid fa-wand-magic-sparkles text-8xl text-white"></i>
+            </div>
             
-            <form action="{{ route('admin.gemini.generate') }}" method="POST" class="flex flex-wrap items-center gap-4">
-                @csrf
-                <div class="relative">
-                    <select name="count" class="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white font-black text-sm outline-none focus:bg-white/20 transition-all appearance-none pr-10">
-                        <option value="5" class="text-gray-800">توليد 5 مواقف</option>
-                        <option value="10" class="text-gray-800">توليد 10 مواقف</option>
-                        <option value="20" class="text-gray-800">توليد 20 موقف</option>
-                    </select>
-                    <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50">
-                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            <div class="relative z-10">
+                <h2 class="text-2xl font-black text-white mb-2 italic">سحر القفشات التلقائي 🔥</h2>
+                <p class="text-purple-100 text-xs font-bold mb-6 italic opacity-80">خلي "جيمناي" يملالك الموقع في ثانية واحدة!</p>
+                
+                <form action="{{ route('admin.gemini.generate') }}" method="POST" class="flex flex-wrap items-center gap-4">
+                    @csrf
+                    <div class="relative">
+                        <select name="count" class="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white font-black text-sm outline-none focus:bg-white/20 transition-all appearance-none pr-10">
+                            <option value="5" class="text-gray-800">توليد 5 مواقف</option>
+                            <option value="10" class="text-gray-800">توليد 10 مواقف</option>
+                            <option value="20" class="text-gray-800">توليد 20 مواقف</option>
+                        </select>
+                        <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50">
+                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </div>
                     </div>
-                </div>
 
-                <button type="submit" class="bg-white text-purple-600 hover:bg-purple-50 px-8 py-3 rounded-xl font-black text-sm shadow-lg shadow-black/10 transition-all active:scale-95 flex items-center gap-2">
-                    <i class="fa-solid fa-bolt"></i>
-                    يلا بينا!
-                </button>
-            </form>
+                    <button type="submit" class="bg-white text-purple-600 hover:bg-purple-50 px-8 py-3 rounded-xl font-black text-sm shadow-lg shadow-black/10 transition-all active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt"></i>
+                        يلا بينا!
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Manual JSON Import -->
+        <div class="bg-gradient-to-r from-teal-500 to-sky-500 dark:from-teal-600 dark:to-sky-600 p-8 rounded-[2rem] shadow-xl relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                <i class="fa-solid fa-cloud-arrow-up text-8xl text-white"></i>
+            </div>
+
+            <div class="relative z-10 text-white">
+                <h2 class="text-2xl font-black mb-2 italic">رفع ملف JSON جاهز 📂</h2>
+                <p class="text-teal-100 text-xs font-bold mb-6 italic opacity-80">ارفع الملف اللي جيميناي جهزهولك وهيترفع فوراً!</p>
+
+                <form action="{{ route('admin.gemini.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-center gap-4">
+                    @csrf
+                    <div class="flex-1 min-w-[200px]">
+                        <input type="file" name="json_file" accept=".json,.txt" required class="block w-full text-xs text-white/70 file:bg-white/10 file:text-white file:border-none file:px-4 file:py-3 file:rounded-xl file:font-black file:text-xs hover:file:bg-white/20 file:cursor-pointer cursor-pointer border border-dashed border-white/20 p-1 rounded-xl">
+                    </div>
+
+                    <button type="submit" class="bg-white text-teal-600 hover:bg-teal-50 px-8 py-3 rounded-xl font-black text-sm shadow-lg shadow-black/10 transition-all active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        رفع وتوزيع
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <!-- Setups Stat -->
         <div class="bg-white dark:bg-darkCard p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 group transition-all duration-300">
             <div class="flex items-start justify-between mb-6">
@@ -374,8 +387,33 @@
     </div>
 </div>
 
+@push('styles')
+<style>
+    @keyframes slide-in-left {
+        from { transform: translateX(-100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    .animate-slide-in-left {
+        animation: slide-in-left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
+    // System to auto-remove toast after 4 seconds
+    document.addEventListener('DOMContentLoaded', () => {
+        const successToast = document.getElementById('toast-success');
+        const errorToast = document.getElementById('toast-error');
+        
+        if (successToast) {
+            setTimeout(() => { successToast.style.opacity = '0'; successToast.style.transition = '0.5s'; setTimeout(() => successToast.remove(), 500); }, 4000);
+        }
+        if (errorToast) {
+            setTimeout(() => { errorToast.style.opacity = '0'; errorToast.style.transition = '0.5s'; setTimeout(() => errorToast.remove(), 500); }, 6000);
+        }
+    });
+
     const isDark = document.documentElement.classList.contains('dark');
     const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
     const textColor = isDark ? '#9ca3af' : '#6b7280';

@@ -44,5 +44,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::delete('/comments/{id}', [DashboardController::class, 'deleteComment'])->name('comments.delete');
 
         Route::post('/gemini/generate', [GeminiController::class, 'generate'])->name('gemini.generate');
+        Route::post('/gemini/import', [GeminiController::class, 'importFromJson'])->name('gemini.import');
     });
 });

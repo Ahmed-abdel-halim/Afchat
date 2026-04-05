@@ -57,16 +57,18 @@ class GenerateAfshatCommand extends Command
             $this->warn("Model listing failed, continuing anyway...");
         }
 
-        $this->info("Generating {$count} Egyptian afshat using Gemini (Diagnostic Mode)...");
+        $this->info("Generating {$count} Egyptian afshat with 10 replies each using Gemini...");
 
-        $prompt = "أنت شاب مصري دمه خفيف جداً. اكتب {$count} مواقف (Setup) قصيرة من سطر واحد، واكتب أقوى رد قصف جبهة عليه (Punchline) باللهجة المصرية الدارجة. 
-        اختار موضوعات عشوائية (شغل، جواز، صحاب، مواصلات، أهل، خروجات). 
-        رجع النتيجة بصيغة JSON حصراً عبارة عن مصفوفة (Array) من الأشياء، كل شيء فيه:
-        - setup: الموقف المستفز أو الافتتاحي.
-        - punchline: الرد السريع المفحم.
+        $prompt = "أنت شاب مصري دمه خفيف جداً وصانع محتوى كوميدي. 
+        اكتب {$count} مواقف (Setup) قصيرة من سطر واحد.
+        لكل موقف، اكتب مصفوفة من 10 ردود (Punchlines) قوية ومختلفة وقصف جبهة باللهجة المصرية.
+        
+        رجع النتيجة بصيغة JSON حصراً (مصفوفة من الأشياء):
+        - setup: الموقف.
+        - punchline: مصفوفة [] من 10 ردود ساخرة.
         - tags: مصفوفة من تاجات مناسبة (مثل: #شغل، #صحاب).
-        - comments: مصفوفة من 3 تعليقات مصرية ساخرة على الرد (punchline) ده بالذات.
-        رجع JSON فقط.";
+        - comments: مصفوفة من 5 تعليقات مصرية ساخرة ليتم توزيعها.
+        رجع JSON فقط وبدون علامات تنصيص عربية.";
 
         // Using models confirmed by your diagnostic list
         $models = [
@@ -81,7 +83,7 @@ class GenerateAfshatCommand extends Command
 
             foreach ($models as $model) {
                 $this->info("Trying model: {$model}...");
-                $response = Http::timeout(60)->post("https://generativelanguage.googleapis.com/{$version}/models/{$model}:generateContent?key={$apiKey}", [
+                $response = Http::timeout(120)->post("https://generativelanguage.googleapis.com/{$version}/models/{$model}:generateContent?key={$apiKey}", [
                     'contents' => [['parts' => [['text' => $prompt]]]]
                 ]);
 
@@ -96,7 +98,7 @@ class GenerateAfshatCommand extends Command
             }
 
             if (!$success) {
-                $this->error("All attempts failed. Last status: " . ($response ? $response->status() : 'No response'));
+                $this->error("All attempts failed.");
                 return 1;
             }
 
@@ -105,6 +107,7 @@ class GenerateAfshatCommand extends Command
             
             // Cleanup JSON
             $text = preg_replace('/^```json\s*|\s*```$/i', '', trim($text));
+            $text = str_replace('،', ',', $text); // Fix common Arabic keyboard issue
             $afshatData = json_decode($text, true);
 
             if (!is_array($afshatData)) {
@@ -129,23 +132,30 @@ class GenerateAfshatCommand extends Command
                     'media_type' => 'text',
                 ]);
 
-                $punchline = Punchline::create([
-                    'setup_id' => $setup->id,
-                    'user_id' => $botUsers->random()->id,
-                    'text' => $item['punchline'] ?? '',
-                    'media_type' => 'text',
-                    'laughs' => rand(5, 50),
-                    'views' => rand(100, 500),
-                ]);
+                $punchlinesArr = (array) ($item['punchline'] ?? []);
+                if (empty($punchlinesArr) && !empty($item['punchline'])) {
+                    $punchlinesArr = [$item['punchline']];
+                }
 
-                // Create AI Comments
-                if (isset($item['comments']) && is_array($item['comments'])) {
-                    foreach ($item['comments'] as $cBody) {
-                        \App\Models\Comment::create([
-                            'user_id' => $botUsers->random()->id,
-                            'punchline_id' => $punchline->id,
-                            'body' => $cBody,
-                        ]);
+                foreach ($punchlinesArr as $pText) {
+                    $punchline = Punchline::create([
+                        'setup_id' => $setup->id,
+                        'user_id' => $botUsers->random()->id,
+                        'text' => $pText,
+                        'media_type' => 'text',
+                        'laughs' => rand(5, 50),
+                        'views' => rand(100, 500),
+                    ]);
+
+                    // Create AI Comments for this punchline
+                    if (isset($item['comments']) && is_array($item['comments'])) {
+                        foreach ($item['comments'] as $cBody) {
+                            \App\Models\Comment::create([
+                                'user_id' => $botUsers->random()->id,
+                                'punchline_id' => $punchline->id,
+                                'body' => $cBody,
+                            ]);
+                        }
                     }
                 }
 
@@ -159,7 +169,7 @@ class GenerateAfshatCommand extends Command
                     $setup->tags()->sync($tagIds);
                 }
 
-                $this->line("Created: " . Str::limit($setup->text, 40));
+                $this->line("Created Setup with " . count($punchlinesArr) . " replies: " . Str::limit($setup->text, 30));
             }
 
             $this->info("Generation successful!");
