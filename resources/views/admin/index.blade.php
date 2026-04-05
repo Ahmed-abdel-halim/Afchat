@@ -64,110 +64,110 @@
     <!-- Stats Grid -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <!-- Setups Stat -->
-        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 group transition-all duration-300">
-            <div class="flex items-start justify-between mb-6">
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">إجمالي القفشات</p>
+        <div class="bg-white dark:bg-darkCard p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 group transition-all duration-300">
+            <div class="flex items-start justify-between mb-4 md:mb-6">
+                <p class="text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider">إجمالي القفشات</p>
                 <button class="text-gray-200 hover:text-gray-400">
                     <i class="fa-solid fa-ellipsis text-xs"></i>
                 </button>
             </div>
             
             <div class="flex items-center justify-between">
-                <div class="w-12 h-12 bg-sky-50 dark:bg-sky-500/10 rounded-2xl flex items-center justify-center text-sky-500 shrink-0">
-                    <i class="fa-solid fa-quote-right text-lg"></i>
+                <div class="hidden sm:flex w-10 h-10 md:w-12 md:h-12 bg-sky-50 dark:bg-sky-500/10 rounded-xl md:rounded-2xl items-center justify-center text-sky-500 shrink-0">
+                    <i class="fa-solid fa-quote-right text-base md:text-lg"></i>
                 </div>
 
-                <h3 class="text-4xl font-black tracking-tight text-gray-800 dark:text-gray-100">{{ $stats['setups_count'] }}</h3>
+                <h3 class="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-gray-800 dark:text-gray-100">{{ $stats['setups_count'] }}</h3>
                 
-                <div class="px-2 py-1 bg-green-500/10 text-green-500 rounded-lg text-[10px] font-black flex items-center gap-1 shrink-0">
-                    <i class="fa-solid fa-arrow-up text-[8px]"></i>
+                <div class="px-1.5 py-0.5 md:px-2 md:py-1 bg-green-500/10 text-green-500 rounded-lg text-[8px] md:text-[10px] font-black flex items-center gap-1 shrink-0">
+                    <i class="fa-solid fa-arrow-up text-[7px] md:text-[8px]"></i>
                     <span>12%+</span>
                 </div>
             </div>
             
             <div class="text-left mt-4">
-                <p class="text-[9px] font-bold text-gray-300">منذ الشهر الماضي</p>
+                <p class="text-[8px] md:text-[9px] font-bold text-gray-300">منذ الشهر الماضي</p>
             </div>
         </div>
 
         <!-- Replies Stat -->
-        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 group transition-all duration-300">
-            <div class="flex items-start justify-between mb-6">
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">إجمالي الردود</p>
+        <div class="bg-white dark:bg-darkCard p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 group transition-all duration-300">
+            <div class="flex items-start justify-between mb-4 md:mb-6">
+                <p class="text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider">إجمالي الردود</p>
                 <button class="text-gray-200 hover:text-gray-400">
                     <i class="fa-solid fa-ellipsis text-xs"></i>
                 </button>
             </div>
             
             <div class="flex items-center justify-between">
-                <div class="w-12 h-12 bg-purple-50 dark:bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 shrink-0">
-                    <i class="fa-solid fa-comments text-lg"></i>
+                <div class="hidden sm:flex w-10 h-10 md:w-12 md:h-12 bg-purple-50 dark:bg-purple-500/10 rounded-xl md:rounded-2xl items-center justify-center text-purple-500 shrink-0">
+                    <i class="fa-solid fa-comments text-base md:text-lg"></i>
                 </div>
 
-                <h3 class="text-4xl font-black tracking-tight text-gray-800 dark:text-gray-100">{{ $stats['punchlines_count'] }}</h3>
+                <h3 class="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-gray-800 dark:text-gray-100">{{ $stats['punchlines_count'] }}</h3>
                 
-                <div class="px-2 py-1 bg-green-500/10 text-green-500 rounded-lg text-[10px] font-black flex items-center gap-1 shrink-0">
-                    <i class="fa-solid fa-arrow-up text-[8px]"></i>
+                <div class="px-1.5 py-0.5 md:px-2 md:py-1 bg-green-500/10 text-green-500 rounded-lg text-[8px] md:text-[10px] font-black flex items-center gap-1 shrink-0">
+                    <i class="fa-solid fa-arrow-up text-[7px] md:text-[8px]"></i>
                     <span>8%+</span>
                 </div>
             </div>
             
             <div class="text-left mt-4">
-                <p class="text-[9px] font-bold text-gray-300">منذ الشهر الماضي</p>
+                <p class="text-[8px] md:text-[9px] font-bold text-gray-300">منذ الشهر الماضي</p>
             </div>
         </div>
 
         <!-- Users Stat -->
-        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 group transition-all duration-300">
-            <div class="flex items-start justify-between mb-6">
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">المستخدمين</p>
+        <div class="bg-white dark:bg-darkCard p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 group transition-all duration-300">
+            <div class="flex items-start justify-between mb-4 md:mb-6">
+                <p class="text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider">المستخدمين</p>
                 <button class="text-gray-200 hover:text-gray-400">
                     <i class="fa-solid fa-ellipsis text-xs"></i>
                 </button>
             </div>
             
             <div class="flex items-center justify-between">
-                <div class="w-12 h-12 bg-blue-50 dark:bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 shrink-0">
-                    <i class="fa-solid fa-users text-lg"></i>
+                <div class="hidden sm:flex w-10 h-10 md:w-12 md:h-12 bg-blue-50 dark:bg-blue-500/10 rounded-xl md:rounded-2xl items-center justify-center text-blue-500 shrink-0">
+                    <i class="fa-solid fa-users text-base md:text-lg"></i>
                 </div>
 
-                <h3 class="text-4xl font-black tracking-tight text-gray-800 dark:text-gray-100">{{ $stats['users_count'] }}</h3>
+                <h3 class="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-gray-800 dark:text-gray-100">{{ $stats['users_count'] }}</h3>
                 
-                <div class="px-2 py-1 bg-green-500/10 text-green-500 rounded-lg text-[10px] font-black flex items-center gap-1 shrink-0">
-                    <i class="fa-solid fa-arrow-up text-[8px]"></i>
+                <div class="px-1.5 py-0.5 md:px-2 md:py-1 bg-green-500/10 text-green-500 rounded-lg text-[8px] md:text-[10px] font-black flex items-center gap-1 shrink-0">
+                    <i class="fa-solid fa-arrow-up text-[7px] md:text-[8px]"></i>
                     <span>15%+</span>
                 </div>
             </div>
             
             <div class="text-left mt-4">
-                <p class="text-[9px] font-bold text-gray-300">منذ الشهر الماضي</p>
+                <p class="text-[8px] md:text-[9px] font-bold text-gray-300">منذ الشهر الماضي</p>
             </div>
         </div>
 
         <!-- Comments Stat -->
-        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 group transition-all duration-300">
-            <div class="flex items-start justify-between mb-6">
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">التعليقات</p>
+        <div class="bg-white dark:bg-darkCard p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 group transition-all duration-300">
+            <div class="flex items-start justify-between mb-4 md:mb-6">
+                <p class="text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider">التعليقات</p>
                 <button class="text-gray-200 hover:text-gray-400">
                     <i class="fa-solid fa-ellipsis text-xs"></i>
                 </button>
             </div>
             
             <div class="flex items-center justify-between">
-                <div class="w-12 h-12 bg-pink-50 dark:bg-pink-500/10 rounded-2xl flex items-center justify-center text-pink-500 shrink-0">
-                    <i class="fa-solid fa-comment-dots text-lg"></i>
+                <div class="hidden sm:flex w-10 h-10 md:w-12 md:h-12 bg-pink-50 dark:bg-pink-500/10 rounded-xl md:rounded-2xl items-center justify-center text-pink-500 shrink-0">
+                    <i class="fa-solid fa-comment-dots text-base md:text-lg"></i>
                 </div>
 
-                <h3 class="text-4xl font-black tracking-tight text-gray-800 dark:text-gray-100">{{ $stats['comments_count'] }}</h3>
+                <h3 class="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-gray-800 dark:text-gray-100">{{ $stats['comments_count'] }}</h3>
                 
-                <div class="px-2 py-1 bg-blue-500/10 text-blue-500 rounded-lg text-[10px] font-black flex items-center gap-1 shrink-0">
-                    <i class="fa-solid fa-clock text-[8px]"></i>
+                <div class="px-1.5 py-0.5 md:px-2 md:py-1 bg-blue-500/10 text-blue-500 rounded-lg text-[8px] md:text-[10px] font-black flex items-center gap-1 shrink-0">
+                    <i class="fa-solid fa-clock text-[7px] md:text-[8px]"></i>
                     <span>مباشر</span>
                 </div>
             </div>
             
             <div class="text-left mt-4">
-                <p class="text-[9px] font-bold text-gray-300">تحديث تلقائي</p>
+                <p class="text-[8px] md:text-[9px] font-bold text-gray-300">تحديث تلقائي</p>
             </div>
         </div>
     </div>
