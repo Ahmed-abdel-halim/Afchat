@@ -230,6 +230,14 @@
                         </div>
                         <span x-show="sidebarOpen || isMobile" class="mr-3 font-semibold">المستخدمين</span>
                     </a>
+
+                    <a href="{{ route('admin.profile') }}" 
+                       class="flex items-center px-4 py-3 rounded-2xl transition-all group whitespace-nowrap {{ request()->routeIs('admin.profile') ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400' : 'hover:bg-gray-50 dark:hover:bg-white/5' }}">
+                        <div class="w-8 flex justify-center shrink-0">
+                            <i class="fa-solid fa-user-gear text-lg {{ request()->routeIs('admin.profile') ? 'text-sky-500' : 'text-gray-400 group-hover:text-sky-500' }}"></i>
+                        </div>
+                        <span x-show="sidebarOpen || isMobile" class="mr-3 font-semibold">الملف الشخصي</span>
+                    </a>
                 </nav>
 
                 <!-- Footer (Logout) -->
@@ -282,6 +290,12 @@
                                 <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">المستخدم</p>
                                 <p class="text-sm font-bold truncate">{{ auth()->user()->name ?? 'المدير' }}</p>
                              </div>
+                             
+                             <a href="{{ route('admin.profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all font-bold text-sm mb-1">
+                                <i class="fa-solid fa-user-circle text-sky-500"></i>
+                                <span>الملف الشخصي</span>
+                             </a>
+
                             <form action="{{ route('admin.logout') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 dark:hover:bg-red-500/20 transition-all font-bold text-sm">
