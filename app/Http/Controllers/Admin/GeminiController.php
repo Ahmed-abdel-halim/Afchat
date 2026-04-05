@@ -20,7 +20,6 @@ class GeminiController extends Controller
             if ($exitCode === 0) {
                 return back()->with('success', "تم توليد {$count} مواقف جديدة بنجاح بواسطة جيمناي! وتم توزيعها على حسابات عشوائية.");
             } else {
-                // Detecting quota error to give a friendly message if it exists in output
                 if (str_contains(strtolower($output), 'quota')) {
                     $errorMessage = "انتهت الحصة المجانية لمفتاح Gemini (Quota Exceeded). يرجى تغيير المفتاح في ملف .env أو المحاولة لاحقاً.";
                 } else {
@@ -35,9 +34,8 @@ class GeminiController extends Controller
 
     public function importFromJson(Request $request)
     {
-        set_time_limit(0); // Ensure long imports don't timeout
+        set_time_limit(0); 
         
-        // Relaxed validation to avoid MIME issues with .txt files
         $request->validate([
             'json_file' => 'required|file',
         ]);
@@ -45,16 +43,13 @@ class GeminiController extends Controller
         try {
             $fileContent = file_get_contents($request->file('json_file')->path());
             
-            // Try to convert to UTF-8 if it's not already
             if (!mb_check_encoding($fileContent, 'UTF-8')) {
                 $fileContent = mb_convert_encoding($fileContent, 'UTF-8', 'ISO-8859-1, Windows-1256, ASCII');
             }
             
-            // CLEANUP: Remove Markdown wrappers (```json ... ```) if they exist
             $fileContent = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', $fileContent);
             $fileContent = trim($fileContent);
 
-            // FIX: Replace Arabic commas with standard English commas
             $fileContent = str_replace('،', ',', $fileContent);
             
             $afshatData = json_decode($fileContent, true);
@@ -67,7 +62,6 @@ class GeminiController extends Controller
                 return back()->with('error', 'الملف لا يحتوي على مصفوفة بيانات صحيحة.');
             }
 
-            // Get Bot Users
             $botUsers = \App\Models\User::where('is_bot', 1)->orWhere('email', 'like', '%@afchat.fun')->get();
             if ($botUsers->isEmpty()) {
                 $botUsers = collect([\App\Models\User::first()]);
@@ -75,7 +69,6 @@ class GeminiController extends Controller
 
             $createdCount = 0;
             foreach ($afshatData as $item) {
-                // Random bot user for setup
                 $setupUser = $botUsers->random();
                 $setupText = trim($item['setup'] ?? 'موقف بدون نص', " \"'");
 
@@ -86,7 +79,6 @@ class GeminiController extends Controller
                 ]);
 
                 $punchlinesData = (array) ($item['punchline'] ?? []);
-                // Support both single string and array
                 if (empty($punchlinesData) && !empty($item['punchline'])) {
                     $punchlinesData = [$item['punchline']];
                 }
@@ -101,7 +93,6 @@ class GeminiController extends Controller
                         'views' => rand(100, 500),
                     ]);
 
-                    // Create AI Comments for EACH punchline if provided
                     if (isset($item['comments']) && is_array($item['comments'])) {
                         foreach ($item['comments'] as $cBody) {
                             \App\Models\Comment::create([
@@ -113,7 +104,6 @@ class GeminiController extends Controller
                     }
                 }
 
-                // Tags for the original setup
                 if (isset($item['tags']) && is_array($item['tags'])) {
                     $tagIds = [];
                     foreach ($item['tags'] as $tagName) {

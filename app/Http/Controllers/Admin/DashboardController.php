@@ -156,4 +156,3 @@ class DashboardController extends Controller
         return back()->with('success', 'تم تحديث الملف الشخصي بنجاح');
     }
 }
-

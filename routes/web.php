@@ -5,29 +5,15 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\GeminiController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
 Route::get('/', function () {
     return redirect()->route('admin.index');
 });
 
-// Admin Dashboard
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
-    // Auth Routes
     Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-    // Protected Routes
     Route::middleware('auth')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
         Route::get('/setups', [DashboardController::class, 'setups'])->name('setups');

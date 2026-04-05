@@ -12,23 +12,10 @@ use Illuminate\Support\Str;
 
 class GenerateAfshatCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'app:generate-afshat {count=5}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Generate new Egyptian afshat using Gemini AI';
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
         $count = $this->argument('count');
@@ -39,23 +26,15 @@ class GenerateAfshatCommand extends Command
             return 1;
         }
 
-        // AGGRESSIVE CLEANING: Removing quotes that often cause 404/Invalid Key errors in .env
         $apiKey = trim($apiKey, " \t\n\r\0\x0B\"'");
 
-        $this->info("Diagnostic: Fetching available models for your API key...");
-        
         try {
             $listResponse = Http::get("https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}");
             if ($listResponse->successful()) {
                 $modelsData = $listResponse->json();
                 $availableModels = collect($modelsData['models'] ?? [])->pluck('name')->toArray();
-                $this->info("Found " . count($availableModels) . " models: " . implode(', ', $availableModels));
-            } else {
-                $this->error("Diagnostic Failed: Status " . $listResponse->status() . " - " . ($listResponse->json()['error']['message'] ?? 'Unknown Error'));
             }
-        } catch (\Exception $e) {
-            $this->warn("Model listing failed, continuing anyway...");
-        }
+        } catch (\Exception $e) {}
 
         $this->info("Generating {$count} Egyptian afshat with 10 replies each using Gemini...");
 
@@ -70,7 +49,6 @@ class GenerateAfshatCommand extends Command
         - comments: مصفوفة من 5 تعليقات مصرية ساخرة ليتم توزيعها.
         رجع JSON فقط وبدون علامات تنصيص عربية.";
 
-        // Using models confirmed by your diagnostic list
         $models = [
             'gemini-2.0-flash',
             'gemini-flash-latest',
@@ -105,9 +83,8 @@ class GenerateAfshatCommand extends Command
             $data = $response->json();
             $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? '[]';
             
-            // Cleanup JSON
             $text = preg_replace('/^```json\s*|\s*```$/i', '', trim($text));
-            $text = str_replace('،', ',', $text); // Fix common Arabic keyboard issue
+            $text = str_replace('،', ',', $text); 
             $afshatData = json_decode($text, true);
 
             if (!is_array($afshatData)) {
@@ -115,14 +92,12 @@ class GenerateAfshatCommand extends Command
                 return 1;
             }
 
-            // Get Bot Users
             $botUsers = User::where('is_bot', 1)->orWhere('email', 'like', '%@afchat.fun')->get();
             if ($botUsers->isEmpty()) {
                 $botUsers = collect([User::first()]);
             }
 
             foreach ($afshatData as $item) {
-                // Random bot user for setup
                 $setupUser = $botUsers->random();
                 $setupText = trim($item['setup'] ?? 'موقف بدون نص', " \"'");
 
@@ -147,7 +122,6 @@ class GenerateAfshatCommand extends Command
                         'views' => rand(100, 500),
                     ]);
 
-                    // Create AI Comments for this punchline
                     if (isset($item['comments']) && is_array($item['comments'])) {
                         foreach ($item['comments'] as $cBody) {
                             \App\Models\Comment::create([
@@ -159,7 +133,6 @@ class GenerateAfshatCommand extends Command
                     }
                 }
 
-                // Tags
                 if (isset($item['tags']) && is_array($item['tags'])) {
                     $tagIds = [];
                     foreach ($item['tags'] as $tagName) {
