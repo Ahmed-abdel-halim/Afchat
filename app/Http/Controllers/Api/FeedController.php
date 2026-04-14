@@ -129,7 +129,7 @@ class FeedController extends Controller
                 return response()->json(['message' => 'media_file is required when media_type is image/video'], 422);
             }
             $path = $request->file('media_file')->store('media', 'public');
-            $mediaUrl = $path;
+            $mediaUrl = asset('storage/' . $path);
         }
     
         $punchline = Punchline::create([

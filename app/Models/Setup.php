@@ -40,17 +40,5 @@ class Setup extends Model
             ]
         ];
     }
-    public function getMediaUrlAttribute($value)
-    {
-        if (!$value) return null;
-        if (filter_var($value, FILTER_VALIDATE_URL)) {
-             if (str_contains($value, 'localhost') || str_contains($value, '127.0.0.1')) {
-                 $path = last(explode('/storage/', $value));
-                 return asset('storage/' . $path);
-             }
-             return $value;
-        }
-        return asset('storage/' . $value);
-    }
 }
 
